@@ -1,6 +1,7 @@
 import express from "express";
 import User from "./mongo.js";
 import cors from 'cors';
+import  jwt from "jsonwebtoken";
 const port=8000;
 
 const app=express();
@@ -10,6 +11,8 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
 
+const secretKey='mysecretkeyismadarauchiha';
+
 //routes
 app.get('/',()=>{
 console.log("login get");
@@ -17,10 +20,10 @@ console.log("login get");
 
 //register route
 app.post('/register',async (req,res)=>{
-const {userMail,userPassword}=req.body;
+const {userMail,hashedPassword}=req.body;
 const data={
     email:userMail,
-    password:userPassword
+    password:hashedPassword
 }
 try{
 const check=await User.findOne({email:userMail});
@@ -53,11 +56,21 @@ try{
             
         }
         else if(check1){
+          const hashCheck=bcrypt.compare(userPassword,password)
           const check=  await User.findOne({password:userPassword});
 
           if(check){
             res.json('exist');
             console.log("user exist");
+
+const token=jwt.sign(
+{
+  email:userMail,
+  password:userPassword,
+}
+,secretKey);
+
+localStorage.setItem('token',token);
           }
           else{
             res.json('notexist');

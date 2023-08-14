@@ -5,6 +5,9 @@ import {Link} from 'react-router-dom';
 import toast,{Toaster} from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import bcrypt from 'bcrypt';
+
+const salt=bcrypt.genSalt(10);
 
 
 const Register= () => {
@@ -36,8 +39,12 @@ const Register= () => {
   const checkEmailAndPassword=(e)=>{
   e.preventDefault();
 
+
 if(userMail && userPassword===confirmPassword){
-axios.post('http://localhost:8000/register',{userMail,userPassword})
+  const hashedPassword=bcrypt.hashSync(userPassword,salt);
+  console.log(hashedPassword);
+
+axios.post('http://localhost:8000/register',{userMail,hashedPassword})
 .then( (res)=>{
   console.log(res);
   if(res.data==='exist'){

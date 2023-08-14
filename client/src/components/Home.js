@@ -1,7 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import '../styles/Home.css'
 import logos from '../images/eye.png'
+import jwt from 'jsonwebtoken';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+
 const Home = () => {
+const navigate=useNavigate();
+  useEffect(()=>{
+    const token= localStorage.getItem('token');
+    if(token){
+      const user= jwt.decode(token);
+    }else{
+      localStorage.removeItem('token');
+navigate('/');
+  setTimeout(()=>toast.error("Enter valid Credentials!"),1000)
+    }
+  },[])
   return (
     <>
       <div className='cover'>
@@ -30,6 +45,7 @@ const Home = () => {
 
 <div className='main-area'>
 <h1>Main-area</h1>
+
 </div>
 
       </div>
